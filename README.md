@@ -10,9 +10,7 @@ Imagine you want to verify on a larger branch if each commit compiles.
 ```
      --C--D--E--F--(feature-branch)
     /
-A--B--G--H
-   \
-    \--(master)
+A--B--(master)
 ````
 
 You would need to manually checkout each commit, eventually update submodules
