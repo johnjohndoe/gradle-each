@@ -5,6 +5,27 @@ show_help() {
 	echo "Usage: $0 --gradle-task assembleDebug --from-hash master --till-hash feature-branch"
 }
 
+print_header() {
+	echo
+	echo "=============================================================================="
+	echo "Running Gradle task on \"`$1`\" ..."
+	echo "=============================================================================="
+	echo
+}
+
+print_success_footer() {
+	echo "Gradle task \"$1\" succeeded."
+}
+
+print_failure_footer() {
+	echo "Gradle task \"$1\" failed."
+	echo "Commit: \"`$2`\" ..."
+}
+
+print_java_version() {
+	echo "JAVA_HOME = $JAVA_HOME"
+}
+
 build_commit() {
 	commit=$1
 	gradle_tasks=$2
@@ -19,11 +40,7 @@ build_commit() {
 	git_short_log_cmd="git log --abbrev-commit --format=oneline -n 1 $commit"
 	gradlew_cmd="./gradlew $gradle_tasks"
 
-	echo
-	echo "=============================================================================="
-	echo "Running Gradle task on \"`$git_short_log_cmd`\" ..."
-	echo "=============================================================================="
-	echo
+	print_header "$git_short_log_cmd"
 
 	git checkout $commit
 	git submodule update
@@ -35,10 +52,9 @@ build_commit() {
 	echo "Gradle task exit code = $gradlew_exit_code"
 
 	if [ "$gradlew_exit_code" -eq "0" ]; then
-		echo "Gradle task \"$gradle_tasks\" succeeded."
+		print_success_footer "$gradle_tasks"
 	else
-		echo "Gradle task \"$gradle_tasks\" failed."
-		echo "Commit: \"`$git_short_log_cmd`\" ..."
+		print_failure_footer "$gradle_tasks" "$git_short_log_cmd"
 		exit 1
 	fi
 }
@@ -57,7 +73,7 @@ build_commits() {
 	# Commmands
 	git_list_commits_hashes_cmd="git rev-list --reverse $from_hash..$till_hash"
 
-	echo "JAVA_HOME = $JAVA_HOME"
+	print_java_version
 
 	# Iterating all commits
 	for commit in $($git_list_commits_hashes_cmd)
