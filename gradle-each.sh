@@ -47,6 +47,8 @@ build_commit() {
 	git checkout $commit
 	git submodule update
 
+	chmod +x gradlew
+
 	# Execute Gradle command; store its exit code
 	$gradlew_cmd; gradlew_exit_code=$?
 
