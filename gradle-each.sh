@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# This shell script executes the given Gradle tasks on a range of commits.
 
 
 show_help() {
