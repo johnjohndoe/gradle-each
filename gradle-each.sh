@@ -28,6 +28,14 @@ print_java_version() {
 	echo "JAVA_HOME = $JAVA_HOME"
 }
 
+print_hash_values() {
+	echo
+	echo GRADLE_TASKS  = "${GRADLE_TASKS}"
+	echo FROM_HASH    = "${FROM_HASH}"
+	echo TILL_HASH    = "${TILL_HASH}"
+	echo
+}
+
 build_commit() {
 	commit=$1
 	gradle_tasks=$2
@@ -112,11 +120,8 @@ case $key in
 esac
 shift # past argument or value
 done
-echo
-echo GRADLE_TASKS  = "${GRADLE_TASKS}"
-echo FROM_HASH    = "${FROM_HASH}"
-echo TILL_HASH    = "${TILL_HASH}"
-echo
+
+print_hash_values
 
 if [[ -z "${GRADLE_TASKS// }" ]] || [[ -z "${FROM_HASH// }" ]] || [[ -z "${TILL_HASH// }" ]]; then
 	show_help
