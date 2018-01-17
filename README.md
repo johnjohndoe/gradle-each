@@ -25,7 +25,9 @@ The parameters explained:
 
 * `-g|--gradle-task` The Gradle tasks you want to execute for each commit
 * `-f|--from-hash` The root of your branch. This can be a branch name e.g. `master` or a hash e.g `B`.
-* `-t|--till-hash` The branch name e.g. `feature-branch` or the hash of the last commit on that branch e.g. `F`.
+  This parameter is optional - the default value is `master`.
+* `-t|--till-hash` The branch name e.g. `feature-branch` or the hash of the last commit on that branch e.g. `F`. 
+  This parameter is optional - the default value is `HEAD`.
 
 ## Author
 

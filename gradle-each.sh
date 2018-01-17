@@ -121,12 +121,21 @@ esac
 shift # past argument or value
 done
 
-print_hash_values
-
 if [[ -z "${GRADLE_TASKS// }" ]] || [[ -z "${FROM_HASH// }" ]] || [[ -z "${TILL_HASH// }" ]]; then
-	show_help
-	exit 0
+
+	if [[ "${GRADLE_TASKS// }" ]] && [[ -z "${FROM_HASH// }" ]] && [[ -z "${TILL_HASH// }" ]]; then
+		# Run with default branch names / references.
+		FROM_HASH="master"
+		TILL_HASH="HEAD"
+	elif [[ -z "${FROM_HASH// }" ]] || [[ -z "${TILL_HASH// }" ]]; then
+		print_hash_values
+		show_help
+		exit 0
+	fi
+
 fi
+
+print_hash_values
 
 build_commits "${GRADLE_TASKS}" "${FROM_HASH}" "${TILL_HASH}"
 
