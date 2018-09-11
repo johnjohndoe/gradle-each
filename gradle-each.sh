@@ -41,8 +41,13 @@ build_commit() {
 	gradle_tasks=$2
 
 	# Check parameters
-	if [[ -z "${commit// }" ]] || [[ -z "${gradle_tasks// }" ]]; then
-		echo "Error: Missing arguments in build_commit()."
+	if [[ -z "${commit// }" ]]; then
+		echo "Error: Missing 'commit' argument in build_commit()."
+		exit 1
+	fi
+
+	if [[ -z "${gradle_tasks// }" ]]; then
+		echo "Error: Missing 'gradle_tasks' argument in build_commit()."
 		exit 1
 	fi
 
