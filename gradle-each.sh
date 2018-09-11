@@ -10,7 +10,7 @@ show_help() {
 print_header() {
 	echo
 	echo "=============================================================================="
-	echo "Running Gradle task on \"`$1`\" ..."
+	echo "${1}/${2}: Running Gradle task on \"`$3`\" ..."
 	echo "=============================================================================="
 	echo
 }
@@ -37,10 +37,22 @@ print_hash_values() {
 }
 
 build_commit() {
-	commit=$1
-	gradle_tasks=$2
+	commit_index=$1
+	commits_count=$2
+	commit=$3
+	gradle_tasks=$4
 
 	# Check parameters
+	if [[ -z "${commit_index// }" ]]; then
+		echo "Error: Missing 'commit_index' argument in build_commit()."
+		exit 1
+	fi
+
+	if [[ -z "${commits_count// }" ]]; then
+		echo "Error: Missing 'commits_count' argument in build_commit()."
+		exit 1
+	fi
+
 	if [[ -z "${commit// }" ]]; then
 		echo "Error: Missing 'commit' argument in build_commit()."
 		exit 1
@@ -55,7 +67,7 @@ build_commit() {
 	git_short_log_cmd="git log --abbrev-commit --format=oneline -n 1 $commit"
 	gradlew_cmd="./gradlew $gradle_tasks"
 
-	print_header "$git_short_log_cmd"
+	print_header "${commit_index}" "${commits_count}" "$git_short_log_cmd"
 
 	git checkout $commit
 	git submodule update
@@ -89,13 +101,19 @@ build_commits() {
 
 	# Commmands
 	git_list_commits_hashes_cmd="git rev-list --reverse $from_hash..$till_hash"
+	git_count_commit_hashes_cmd="git rev-list --count $from_hash..$till_hash"
 
 	print_java_version
 
 	# Iterating all commits
-	for commit in $($git_list_commits_hashes_cmd)
+	commits=$($git_list_commits_hashes_cmd)
+	commits_count=$($git_count_commit_hashes_cmd)
+
+	index=1
+	for commit in ${commits}
 	do
-		build_commit "${commit}" "${gradle_tasks}"
+		build_commit "${index}" "${commits_count}" "${commit}" "${gradle_tasks}"
+		((index++))
 	done
 }
 
