@@ -4,7 +4,7 @@
 
 
 show_help() {
-	echo "Usage: $0 --gradle-task assembleDebug --from-hash master --till-hash feature-branch"
+	echo "Usage: $0 --gradle-tasks assembleDebug --from-hash master --till-hash feature-branch"
 }
 
 print_header() {
