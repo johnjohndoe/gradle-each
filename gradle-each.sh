@@ -4,7 +4,7 @@
 
 
 show_help() {
-	echo "Usage: $0 --gradle-tasks assembleDebug --from-hash master --till-hash feature-branch"
+	echo "Usage: $0 --gradle-tasks assembleDebug --from-hash master --till-hash feature-branch --reverse-order false"
 }
 
 print_header() {
@@ -31,8 +31,9 @@ print_java_version() {
 print_hash_values() {
 	echo
 	echo GRADLE_TASKS  = "${GRADLE_TASKS}"
-	echo FROM_HASH    = "${FROM_HASH}"
-	echo TILL_HASH    = "${TILL_HASH}"
+	echo FROM_HASH     = "${FROM_HASH}"
+	echo TILL_HASH     = "${TILL_HASH}"
+	echo REVERSE_ORDER = "${REVERSE_ORDER}"
 	echo
 }
 
@@ -92,6 +93,7 @@ build_commits() {
 	gradle_tasks=$1
 	from_hash=$2
 	till_hash=$3
+	reverse_order=$4
 
 	# Check parameters
 	if [[ -z "${gradle_tasks// }" ]] || [[ -z "${from_hash// }" ]] || [[ -z "${till_hash// }" ]]; then
@@ -101,20 +103,31 @@ build_commits() {
 
 	# Commmands
 	git_list_commits_hashes_cmd="git rev-list --reverse $from_hash..$till_hash"
+	git_list_commits_hashes_reversed_cmd="git rev-list $from_hash..$till_hash"
 	git_count_commit_hashes_cmd="git rev-list --count $from_hash..$till_hash"
 
 	print_java_version
 
 	# Iterating all commits
 	commits=$($git_list_commits_hashes_cmd)
+	commits_reversed=$($git_list_commits_hashes_reversed_cmd)
 	commits_count=$($git_count_commit_hashes_cmd)
 
-	index=1
-	for commit in ${commits}
-	do
-		build_commit "${index}" "${commits_count}" "${commit}" "${gradle_tasks}"
-		((index++))
-	done
+	if [ "$reverse_order" = false ]; then
+		index=1
+		for commit in ${commits}
+		do
+			build_commit "${index}" "${commits_count}" "${commit}" "${gradle_tasks}"
+			((index++))
+		done
+	else
+		index=$commits_count
+		for commit in ${commits_reversed}
+		do
+			build_commit "${index}" "${commits_count}" "${commit}" "${gradle_tasks}" "${reverse_order}"
+			((index--))
+		done
+	fi
 }
 
 
@@ -135,6 +148,10 @@ case $key in
     ;;
     -t|--till-hash)
     TILL_HASH="$2"
+    shift # past argument
+    ;;
+    -r|--reverse-order)
+    REVERSE_ORDER="$2"
     shift # past argument
     ;;
     *)
@@ -158,8 +175,15 @@ if [[ -z "${GRADLE_TASKS// }" ]] || [[ -z "${FROM_HASH// }" ]] || [[ -z "${TILL_
 
 fi
 
+# Optional "--reverse-order" parameter
+if [[ "${REVERSE_ORDER// }" ]]; then
+	REVERSE_ORDER=true
+else
+	REVERSE_ORDER=false
+fi
+
 print_hash_values
 
-build_commits "${GRADLE_TASKS}" "${FROM_HASH}" "${TILL_HASH}"
+build_commits "${GRADLE_TASKS}" "${FROM_HASH}" "${TILL_HASH}" "${REVERSE_ORDER}"
 
 exit 0
