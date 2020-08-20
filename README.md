@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/johnjohndoe/gradle-each.svg?branch=master)](https://travis-ci.org/johnjohndoe/gradle-each)
+
 # Gradle each
 
 This shell script executes the given Gradle tasks on a range of commits.
