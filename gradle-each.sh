@@ -10,7 +10,7 @@ show_help() {
 print_header() {
 	echo
 	echo "=============================================================================="
-	echo "${1}/${2}: Running Gradle task on \"`$3`\" ..."
+	echo "${1}/${2}: Running Gradle task on \"$($3)\" ..."
 	echo "=============================================================================="
 	echo
 }
@@ -21,7 +21,7 @@ print_success_footer() {
 
 print_failure_footer() {
 	echo "Gradle task \"$1\" failed."
-	echo "Commit: \"`$2`\" ..."
+	echo "Commit: \"$($2)\" ..."
 }
 
 print_java_version() {
@@ -70,7 +70,7 @@ build_commit() {
 
 	print_header "${commit_index}" "${commits_count}" "$git_short_log_cmd"
 
-	git checkout $commit
+	git checkout "$commit"
 	git submodule update
 
 	chmod +x gradlew
